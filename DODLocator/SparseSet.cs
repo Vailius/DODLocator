@@ -1,6 +1,7 @@
 using System;
 using Debug = System.Diagnostics.Debug;
 using Conditional = System.Diagnostics.ConditionalAttribute;
+using System.Collections.Generic;
 
 namespace DODLocator
 {
@@ -110,6 +111,12 @@ namespace DODLocator
     internal class SparseSet<T> : SparseSet
     {
         private T[] _values;
+
+        public T this[int key]
+        {
+            get => GetValue(key);
+            set => SetValue(key, value);
+        }
         public SparseSet(int size) : base(size)
         {
             _values = new T[size];
@@ -123,12 +130,43 @@ namespace DODLocator
         /// <returns>true if value added on key, else returns false</returns>
         public bool AddValue(int key, T value)
         {
-            if (HasKey(key) || AddKey(key))
+            Debug.Assert(HasKey(key), "Key is already contains in set");
+            if (HasKey(key) || !AddKey(key))
+                return false;
+            _values[sparse[key]] = value;
+            return true;
+        }
+
+        /// <summary>
+        /// Set value of key in set
+        /// </summary>
+        /// <param name="key">Key</param>
+        /// <param name="value">Value</param>
+        /// <returns>true if value setted, else returns false</returns>
+        public bool SetValue(int key, T value)
+        {
+            if (HasKey(key))
             {
                 _values[sparse[key]] = value;
                 return true;
             }
+            Debug.Assert(false, "Key is not contains in set");
             return false;
+        }
+
+        /// <summary>
+        /// Get value of key in set
+        /// </summary>
+        /// <param name="key">Key</param>
+        /// <returns>value of key in set</returns>
+        /// <exception cref="KeyNotFoundException">If key not contains in set</exception>
+        public T GetValue(int key)
+        {
+            if (HasKey(key))
+            {
+                return _values[sparse[key]];
+            }
+            throw new KeyNotFoundException("Key is not contains in set");
         }
 
         public override void Resize(int newSize)
