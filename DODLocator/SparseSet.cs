@@ -112,6 +112,8 @@ namespace DODLocator
     {
         private T[] _values;
 
+        public Span<T> Values => new Span<T>(_values, 0, Count);
+
         public T this[int key]
         {
             get => GetValue(key);
