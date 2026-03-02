@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("DODLocator")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+f596dd8b91edb819e147112d08969be8cbd4dce3")]
 [assembly: System.Reflection.AssemblyProductAttribute("DODLocator")]
 [assembly: System.Reflection.AssemblyTitleAttribute("DODLocator")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
