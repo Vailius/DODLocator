@@ -14,6 +14,8 @@ namespace DODLocator
 
         private int[] _sparse, _dense;
 
+        protected int[] sparse => _sparse;
+        
         public SparseSet(int size)
         {
             Size = size;
@@ -74,6 +76,35 @@ namespace DODLocator
                 return true;
             }
 
+            return false;
+        }
+    }
+
+    /// <summary>
+    /// Sparse set modified by a universal type array
+    /// </summary>
+    /// <typeparam name="T">The type of additional set used as values</typeparam>
+    internal class SparseSet<T> : SparseSet
+    {
+        private T[] _values;
+        public SparseSet(int size) : base(size)
+        {
+            _values = new T[size];
+        }
+        
+        /// <summary>
+        /// Adds a value to a set by key
+        /// </summary>
+        /// <param name="key">Key</param>
+        /// <param name="value">Value</param>
+        /// <returns>true if value added on key, else returns false</returns>
+        public bool AddValue(int key, T value)
+        {
+            if (HasKey(key) || AddKey(key))
+            {
+                _values[sparse[key]] = value;
+                return true;
+            }
             return false;
         }
     }
