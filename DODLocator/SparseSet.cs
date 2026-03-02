@@ -78,6 +78,29 @@ namespace DODLocator
 
             return false;
         }
+
+        /// <summary>
+        /// Clear the set
+        /// </summary>
+        public void Clear()
+        {
+            for (int i = 0; i < Count; i++)
+            {
+                _sparse[_dense[i]] = -1;
+                _dense[i] = -1;
+            }
+            Count = 0;
+        }
+
+        /// <summary>
+        /// Resize set
+        /// </summary>
+        /// <param name="newSize">New size of set</param>
+        public virtual void Resize(int newSize)
+        {
+            Array.Resize(ref _sparse, newSize);
+            Array.Resize(ref _dense, newSize);
+        }
     }
 
     /// <summary>
@@ -106,6 +129,12 @@ namespace DODLocator
                 return true;
             }
             return false;
+        }
+
+        public override void Resize(int newSize)
+        {
+            base.Resize(newSize);
+            Array.Resize(ref _values, newSize);
         }
     }
 }
