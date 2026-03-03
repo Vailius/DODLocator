@@ -1,2 +1,12 @@
-﻿// See https://aka.ms/new-console-template for more information
-Console.WriteLine("Hello, World!");
+﻿using System.Diagnostics;
+using System.Numerics;
+
+namespace DODLocator.Tests
+{
+    public class Program
+    {
+        public static void Main(string[] args)
+        {
+        }
+    }
+}
