@@ -37,7 +37,11 @@ namespace DODLocator
         /// <returns>true if key present in a set, else false</returns>
         public bool HasKey(int key)
         {
-            return key >= 0 && key < Count;
+            if (key >= 0 && key < Size)
+            {
+                return _dense[_sparse[key]] == key;
+            }
+            return false;
         }
 
         /// <summary>
