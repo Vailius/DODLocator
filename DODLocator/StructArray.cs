@@ -240,6 +240,8 @@ namespace DODLocator
                         *(_data + i) = (void *)0;
                     }
 
+                    Marshal.FreeHGlobal((IntPtr) _data);
+
                     _data = (void **)0;
                 }
                 _needDispose = false;
