@@ -38,7 +38,7 @@ namespace DODLocator
         public bool HasKey(int key)
         {
             Debug.Assert(key >= 0 && key < Size);
-            return _dense[_sparse[key]] == key;
+            return _sparse[key] >= 0 && _dense[_sparse[key]] == key;
         }
 
         /// <summary>
