@@ -34,8 +34,8 @@ public class ComponentsManager<T> where T : unmanaged
 ```
 
 ## Features
-> 1.Automatic SoA transformation for any unmanaged struct
-> 2.Cache-efficient contiguous field arrays
-> 3.Customizable memory allocation and growth strategies
-> 4.O(1) instance creation and destruction
-> 5.Perfect for ECS, particle systems, and data-oriented designs
+> 1.Automatic SoA transformation for any unmanaged struct\
+> 2.Cache-efficient contiguous field arrays\
+> 3.Customizable memory allocation and growth strategies\
+> 4.O(1) instance creation and destruction\
+> 5.Perfect for ECS, particle systems, and data-oriented designs\
