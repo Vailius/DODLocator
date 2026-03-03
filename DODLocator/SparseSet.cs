@@ -16,6 +16,8 @@ namespace DODLocator
         private int[] _sparse, _dense;
 
         protected int[] sparse => _sparse;
+
+        public Span<int> Dense => new Span<int>(_dense, 0, Count);
         
         public SparseSet(int size)
         {
