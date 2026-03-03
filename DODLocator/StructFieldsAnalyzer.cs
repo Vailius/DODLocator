@@ -5,12 +5,25 @@ using System.Runtime.InteropServices;
 
 namespace DODLocator
 {
+    /// <summary>
+    /// Analyzer for struct fields
+    /// </summary>
+    /// <typeparam name="T">Type of target struct</typeparam>
     internal static class StructFieldsAnalyzer<T>
         where T : unmanaged
     {
         public static readonly bool IsValid = false;
+        /// <summary>
+        /// Field size of name
+        /// </summary>
         public static readonly IReadOnlyDictionary<string, int> Size;
+        /// <summary>
+        /// Field type of name
+        /// </summary>
         public static readonly IReadOnlyDictionary<string, Type> FieldType;
+        /// <summary>
+        /// Field identifier for indexing
+        /// </summary>
         public static readonly IReadOnlyDictionary<string, int> Identifier;
 
         static StructFieldsAnalyzer()
