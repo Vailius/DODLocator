@@ -49,7 +49,7 @@ namespace DODLocator
         public bool AddKey(int key)
         {
             DebugOutOfSet(key);
-            if (HasKey(key) || key >= Count)
+            if (HasKey(key) || key >= Size)
                 return false;
             _sparse[key] = Count++;
             _dense[_sparse[key]] = key;
