@@ -1,5 +1,7 @@
 DODLocator/bin/
 DODLocator/obj/
+DODLocator.Tests/obj/
+DODLocator.Tests/bin/
 .vs/
 *.user
 *.suo
