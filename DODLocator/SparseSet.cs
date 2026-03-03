@@ -82,6 +82,18 @@ namespace DODLocator
         }
 
         /// <summary>
+        /// Returns index in dense array
+        /// </summary>
+        /// <param name="key">Ket</param>
+        /// <returns>Index in dense array, if <paramref name="key"/> not present in set, returns -1 </returns>
+        public int GetDense(int key)
+        {
+            if (HasKey(key))
+                return _sparse[key];
+            return -1;
+        }
+
+        /// <summary>
         /// Clear the set
         /// </summary>
         public void Clear()
