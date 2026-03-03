@@ -56,7 +56,7 @@ namespace DODLocator
                 throw new InvalidOperationException("Unexpected struct fields type");
             _startCapacity = cfg.StartCapacity;
             _fieldsCount = StructFieldsAnalyzer<T>.Size.Count;
-            _data = (void **) Marshal.AllocHGlobal(
+            _data = (void **) cfg.Allocator.Alloc(
                 sizeof(void *) * _fieldsCount
             );
 
@@ -77,7 +77,7 @@ namespace DODLocator
 
                 _size[index] = size;
                 _type[index] = fieldType;
-                void *ptr = (void *) Marshal.AllocHGlobal(size * _startCapacity);
+                void *ptr = cfg.Allocator.Alloc(size * _startCapacity);
                 ThrowIfOOM(ptr);
                 *(_data + index) = ptr;
             }
@@ -228,7 +228,7 @@ namespace DODLocator
                 for (int i = 0; i < _fieldsCount; i++)
                 {
                     void *mem = *(_data + i);
-                    void *newMem = (void *) Marshal.ReAllocHGlobal( (IntPtr) mem, (IntPtr) (newcap * _size[i]));
+                    void *newMem = _config.Allocator.Realloc( mem, newcap * _size[i]);
                     ThrowIfOOM(newMem);
                     *(_data + i) = newMem;
                 }
@@ -280,11 +280,11 @@ namespace DODLocator
                     {
                         void *ptr = *(_data + i);
                         if (ptr != (void *)0)
-                            Marshal.FreeHGlobal((IntPtr)ptr);
+                            _config.Allocator.Free(ptr);
                         *(_data + i) = (void *)0;
                     }
 
-                    Marshal.FreeHGlobal((IntPtr) _data);
+                    _config.Allocator.Free( _data);
 
                     _data = (void **)0;
                 }
