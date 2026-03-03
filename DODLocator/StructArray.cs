@@ -149,7 +149,7 @@ namespace DODLocator
                 {
                     int idx = _vaddress.GetDense(ids[i]);
                     _vaddress.RemoveKey(ids[i]);
-                    _idGen.Return(idx);
+                    _idGen.Return(ids[i]);
                     if (idx != _vaddress.Count)
                         MoveFromEnd(idx);
                 }
