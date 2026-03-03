@@ -6,11 +6,26 @@ using DODLocator.Interfaces;
 
 namespace DODLocator
 {
+    /// <summary>
+    /// Configuration Structure of Array
+    /// </summary>
     public class SoAConfig
     {
+        /// <summary>
+        /// Memory grow strategy
+        /// </summary>
         public readonly IMemoryGrowCurve MemoryGrow;
+        /// <summary>
+        /// Identificator create strategy
+        /// </summary>
         public readonly IIdentifierGenerator IdGenerator;
+        /// <summary>
+        /// Memory allocation strategy
+        /// </summary>
         public readonly IMemoryAllocator Allocator;
+        /// <summary>
+        /// Initial capacity of fields
+        /// </summary>
         public readonly int StartCapacity;
 
         public SoAConfig([NotNullWhen(true)]IMemoryGrowCurve curve, 
