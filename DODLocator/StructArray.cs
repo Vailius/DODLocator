@@ -9,6 +9,10 @@ using DODLocator.Interfaces;
 
 namespace DODLocator
 {
+    /// <summary>
+    /// Class makes a Structure of Arrays from <typeparamref name="T"/>
+    /// </summary>
+    /// <typeparam name="T">Target unmanaged structure</typeparam>
     public unsafe sealed class StructArray<T> : IDisposable
         where T : unmanaged
     {
@@ -96,12 +100,20 @@ namespace DODLocator
 
 #region Lifecycle
 
+        /// <summary>
+        /// Creates a new instance of <typeparamref name="T"/>
+        /// </summary>
+        /// <returns>Identifier of new instance</returns>
         public int Instantiate()
         {
             EnsureCapacity(_vaddress.Count + 1);
             return CreateInstance();
         }
 
+        /// <summary>
+        /// Create a new instance of <typeparamref name="T"/>
+        /// </summary>
+        /// <returns>Identifier of new instance</returns>
         private int CreateInstance()
         {
             int id = _idGen.Next();
@@ -109,6 +121,13 @@ namespace DODLocator
             return id;
         }
 
+        /// <summary>
+        /// Create a new instances of <typeparamref name="T"/>
+        /// </summary>
+        /// <remarks>
+        /// If there are duplicate indices in <paramref name="ids"/>, they will be ignored.
+        /// </remarks>
+        /// <param name="ids">Identifiers to instantiate</param>
         public void InstantiateRange(Span<int> ids)
         {
             EnsureCapacity(_vaddress.Count+ ids.Length);
@@ -116,6 +135,10 @@ namespace DODLocator
                 ids[i] = CreateInstance();
         }
 
+        /// <summary>
+        /// Move instance from <see cref="_vaddress.Count"/> to <paramref name="idx"/>
+        /// </summary>
+        /// <param name="idx"></param>
         private void MoveFromEnd(int idx)
         {
             int max = _size.Max();
@@ -129,6 +152,11 @@ namespace DODLocator
             }
         }
 
+        /// <summary>
+        /// Destroy instance from array
+        /// </summary>
+        /// <param name="id">Identifier</param>
+        /// <returns>true if the instance with the <paramref name="id"/> was contained in the array, otherwise false</returns>
         public bool Destroy(int id)
         {
             if (!_vaddress.HasKey(id))
@@ -141,6 +169,10 @@ namespace DODLocator
             return true;
         }
 
+        /// <summary>
+        /// Dstroy indices in <paramref name="ids"/>, where was contained in the array
+        /// </summary>
+        /// <param name="ids">Indices</param>
         public void DestroyRange(Span<int> ids)
         {
             for (int i = 0; i < ids.Length; i++)
@@ -162,6 +194,10 @@ namespace DODLocator
         public delegate void RawDataHandler(Span<byte> data, int dataIdentifier, Type dataType);
         public delegate void DataHandler<T1>(Span<T1> data);
 
+        /// <summary>
+        /// Processing of SoA fields
+        /// </summary>
+        /// <param name="handler">Method for processing</param>
         public void ProcessRawData(RawDataHandler handler)
         {
             for (int i = 0; i < _fieldsCount; i++)
@@ -172,7 +208,12 @@ namespace DODLocator
         }
 
         
-
+        /// <summary>
+        /// Processing data with type <typeparamref name="T1"/> and index of <paramref name="dataIdentifier"/>
+        /// </summary>
+        /// <typeparam name="T1">Type of field</typeparam>
+        /// <param name="handler">Method for processing</param>
+        /// <param name="dataIdentifier">Identifier of field</param>
         public void ProcessData<T1>(DataHandler<T1> handler, int dataIdentifier) where T1 : unmanaged
         {
             CheckIdentifier(dataIdentifier);
@@ -184,6 +225,10 @@ namespace DODLocator
         }
 #endregion // DataProcessor
 #region Utils
+        /// <summary>
+        /// Ensure growed capacity for SoA
+        /// </summary>
+        /// <param name="targetCapacity">Target capacity</param>
         private void EnsureCapacity(int targetCapacity)
         {
             if (targetCapacity >= _vaddress.Size)
@@ -201,6 +246,12 @@ namespace DODLocator
                 }
             }
         }
+        /// <summary>
+        /// Check valid cast of <typeparamref name="T1"/> to <paramref name="type"/>
+        /// </summary>
+        /// <typeparam name="T1">Target type</typeparam>
+        /// <param name="type">Original type</param>
+        /// <exception cref="InvalidCastException">If cast invalid</exception>
         [Conditional("Debug")]
         private void CheckCast<T1>(Type type)
         {
@@ -208,6 +259,11 @@ namespace DODLocator
                 throw new InvalidCastException($"Try cast {typeof(T1).FullName} => {type.FullName}");
         }
 
+        /// <summary>
+        /// Check bounds of identifier
+        /// </summary>
+        /// <param name="id">Identifier</param>
+        /// <exception cref="InvalidOperationException">If identifier out of bounds</exception>
         [Conditional("Debug")]
         private void CheckIdentifier(int id)
         {
