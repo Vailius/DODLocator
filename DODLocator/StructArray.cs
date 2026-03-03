@@ -214,6 +214,18 @@ namespace DODLocator
 #endregion // DataProcessor
 #region Utils
         /// <summary>
+        /// Get id from index of array
+        /// </summary>
+        /// <param name="index">index in array</param>
+        /// <returns>Identifier of index, if incorrect index, then returns -1</returns>
+        public int GetIdOfIndex(int index)
+        {
+            Debug.Assert(index >= 0 && index < _vaddress.Size);
+            if (index < 0 || index > _vaddress.Size)
+                return -1;
+            return _vaddress.Dense[index];
+        }
+        /// <summary>
         /// Ensure growed capacity for SoA
         /// </summary>
         /// <param name="targetCapacity">Target capacity</param>
