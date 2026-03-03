@@ -9,7 +9,7 @@ namespace DODLocator
     /// Analyzer for struct fields
     /// </summary>
     /// <typeparam name="T">Type of target struct</typeparam>
-    internal static class StructFieldsAnalyzer<T>
+    public static class StructFieldsAnalyzer<T>
         where T : unmanaged
     {
         public static readonly bool IsValid = false;
