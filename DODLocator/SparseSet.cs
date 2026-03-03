@@ -177,5 +177,20 @@ namespace DODLocator
             base.Resize(newSize);
             Array.Resize(ref _values, newSize);
         }
+
+        /// <summary>
+        /// Clears the sparse set and resets all values to the specified clear value.
+        /// </summary>
+        /// <param name="clearValue">The value to set for all cleared entries.</param>
+        /// <remarks>
+        /// This method first clears all values by setting them to <paramref name="clearValue"/>,
+        /// then calls the parameterless Clear() to reset the sparse and dense arrays.
+        /// </remarks>
+        public void Clear(T clearValue)
+        {
+            for (int i = 0; i < Count; i++)
+                _values[i] = clearValue;
+            Clear();
+        }
     }
 }
