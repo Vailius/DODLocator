@@ -3,9 +3,6 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Runtime.InteropServices;
-using DODLocator.Curves;
-using DODLocator.IdGen;
-using DODLocator.Interfaces;
 
 namespace DODLocator
 {
@@ -47,21 +44,17 @@ namespace DODLocator
         private void **_data = (void **)0;
 
         /// <summary>
-        /// Curve of grow memory
+        /// Configuration of SoA - Array
         /// </summary>
-        private IMemoryGrowCurve _curve;
-        /// <summary>
-        /// Id generator
-        /// </summary>
-        private IIdentifierGenerator _idGen;
+        private SoAConfig _config;
 #endregion // Fields
         
 #region  .ctor
-        public StructArray([NotNullWhen(true)]IMemoryGrowCurve curve, [NotNullWhen(true)]IIdentifierGenerator gen, int startCapacity = 64)
+        public StructArray([NotNullWhen(true)]SoAConfig cfg)
         {
             if (!StructFieldsAnalyzer<T>.IsValid)
                 throw new InvalidOperationException("Unexpected struct fields type");
-            _startCapacity = startCapacity;
+            _startCapacity = cfg.StartCapacity;
             _fieldsCount = StructFieldsAnalyzer<T>.Size.Count;
             _data = (void **) Marshal.AllocHGlobal(
                 sizeof(void *) * _fieldsCount
@@ -88,13 +81,8 @@ namespace DODLocator
                 ThrowIfOOM(ptr);
                 *(_data + index) = ptr;
             }
-            _curve = curve;
-            _idGen = gen;
+            _config = cfg;
         }
-
-        public StructArray(int startCapacity = 64) : this(new MemoryGrowCurveX2(), new IdentifierIterator(), startCapacity) {}
-        public StructArray(IIdentifierGenerator idgen, int startCapacity = 64) : this(new MemoryGrowCurveX2(), idgen, startCapacity) {}
-        public StructArray(IMemoryGrowCurve curve, int startCapacity = 64) : this(curve, new IdentifierIterator(), startCapacity) {}
 
 #endregion // .ctor
 
@@ -116,7 +104,7 @@ namespace DODLocator
         /// <returns>Identifier of new instance</returns>
         private int CreateInstance()
         {
-            int id = _idGen.Next();
+            int id = _config.IdGenerator.Next();
             _vaddress.AddKey(id);
             return id;
         }
@@ -163,7 +151,7 @@ namespace DODLocator
                 return false;
             int deleteTarget = _vaddress.GetDense(id);
             _vaddress.RemoveKey(id);
-            _idGen.Return(id);
+            _config.IdGenerator.Return(id);
             if (deleteTarget != _vaddress.Count)
                 MoveFromEnd(deleteTarget);
             return true;
@@ -181,7 +169,7 @@ namespace DODLocator
                 {
                     int idx = _vaddress.GetDense(ids[i]);
                     _vaddress.RemoveKey(ids[i]);
-                    _idGen.Return(ids[i]);
+                    _config.IdGenerator.Return(ids[i]);
                     if (idx != _vaddress.Count)
                         MoveFromEnd(idx);
                 }
@@ -233,7 +221,7 @@ namespace DODLocator
         {
             if (targetCapacity >= _vaddress.Size)
             {
-                int newcap = _curve.Grow(_vaddress.Size, targetCapacity);
+                int newcap = _config.MemoryGrow.Grow(_vaddress.Size, targetCapacity);
                 _vaddress.Resize(newcap);
 
 
