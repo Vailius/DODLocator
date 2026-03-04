@@ -116,6 +116,7 @@ namespace DODLocator
         {
             Array.Resize(ref _sparse, newSize);
             Array.Resize(ref _dense, newSize);
+            Size = newSize;
         }
     }
 
