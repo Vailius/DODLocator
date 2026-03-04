@@ -24,7 +24,8 @@ namespace DODLocator.Tests.Mocks
 
         public void Return(int id)
         {
-            Debug.Assert(_activeIds.Remove(id), "Unexpected returned ID");
+            if (!_activeIds.Remove(id))
+                throw new InvalidOperationException("Unexpected returned ID");
             _freed.Enqueue(id);
         }
     }
