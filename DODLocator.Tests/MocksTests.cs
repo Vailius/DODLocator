@@ -33,9 +33,10 @@ namespace DODLocator.Tests
             try
             {
                 gen.Return(ids.First());
-                throw new Exception("Double return ID");
+                throw new InvalidOperationException("Double return ID");
             }
-            catch (InvalidOperationException) {}
+            catch (InvalidOperationException e) { if (e.Message == "Double return ID") throw; }
+            catch {}
 
             ids.Clear();
         }
@@ -78,12 +79,7 @@ namespace DODLocator.Tests
             Marshal.WriteByte((nint)memCheck, 0, 42);
             alloc.Free(memCheck);
             
-            try
-            {
-                Marshal.ReadByte((nint)memCheck);
-                Debug.Assert(false, "Memory was not actually freed");
-            }
-            catch (AccessViolationException) {}
+            Debug.Assert(!alloc.AllocatedBlocks.Contains((nint)memCheck), "Memory was not actually freed");
         }
     }
 }
