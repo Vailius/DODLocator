@@ -2,7 +2,7 @@
 Data-Oriented Design Locator - A low-level memory organizer that transforms C# structs into efficient Structure of Arrays (SoA) layout for high-performance scenarios.
 
 ## Quick start
-```
+```csharp
 // 1. Define your struct
 public struct Vector2
 {
@@ -19,7 +19,7 @@ StructArray<Vector2> soa = new StructArray<Vector2>(cfg);
 ```
 
 ## Use as ECS Foundation
-```
+```csharp
 public class ComponentsManager<T> where T : unmanaged
 {
     private StructArray<T> _array;
