@@ -43,6 +43,7 @@ namespace DODLocator.Tests.Mocks
             {
                 void *r = (void *) Marshal.ReAllocHGlobal((nint)mem, newSize);
                 LastRealloc = new(newSize, (nint) r);
+                _allocated.Add((nint)r);
                 return r;
             }
             throw new InvalidOperationException("Unexpected pointer");
