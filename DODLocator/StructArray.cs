@@ -118,7 +118,7 @@ namespace DODLocator
         /// <param name="ids">Identifiers to instantiate</param>
         public void InstantiateRange(Span<int> ids)
         {
-            EnsureCapacity(_vaddress.Count+ ids.Length);
+            EnsureCapacity(_vaddress.Count + ids.Length);
             for (int i =  0; i < ids.Length; i++)
                 ids[i] = CreateInstance();
         }
