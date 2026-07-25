@@ -52,7 +52,6 @@ namespace DODLocator
 #region  .ctor
         public StructArray([NotNullWhen(true)] SoAConfig cfg)
         {
-            if (cfg is null) throw new ArgumentNullException(nameof(cfg));
             if (!StructFieldsAnalyzer<T>.IsValid)
                 throw new InvalidOperationException("Unexpected struct fields type");
             
@@ -130,7 +129,8 @@ namespace DODLocator
         private int CreateInstance()
         {
             int id = _config.IdGenerator.Next();
-            _ = _vaddress.AddKey(id);
+            bool isAdded = _vaddress.AddKey(id);
+            Debug.Assert(isAdded);
             return id;
         }
 
