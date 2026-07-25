@@ -25,18 +25,27 @@ namespace DODLocator
         /// Field identifier for indexing
         /// </summary>
         public static readonly IReadOnlyDictionary<string, int> Identifier;
+        /// <summary>
+        /// Field name of identifier
+        /// </summary>
+        public static readonly IReadOnlyDictionary<int, string> NameOfIdentifier;
 
         static StructFieldsAnalyzer()
         {
-            FieldInfo[] fields = typeof(T).GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+            FieldInfo[] fields = typeof(T)
+                .GetFields(BindingFlags.Public | 
+                    BindingFlags.NonPublic | 
+                    BindingFlags.Instance);
 
             var size = new Dictionary<string, int>();
             var ftype = new Dictionary<string, Type>();
             var id = new Dictionary<string, int>();
+            var nameOfId = new Dictionary<int, string>();
 
             Size = size;
             FieldType = ftype;
             Identifier = id;
+            NameOfIdentifier = nameOfId;
 
             if (fields.Length == 0)
                 return;
@@ -49,6 +58,7 @@ namespace DODLocator
                 size.Add(name, Marshal.SizeOf(field.FieldType));
                 ftype.Add(name, field.FieldType);
                 id.Add(name, id.Count);
+                nameOfId.Add(id.Count, name);
             }
 
             IsValid = id.Count > 0;
