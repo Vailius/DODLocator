@@ -117,6 +117,8 @@ namespace DODLocator
         /// <returns>Identifier of new instance</returns>
         public int Instantiate()
         {
+            if (_needDispose)
+                throw new ObjectDisposedException(nameof(StructArray<T>));
             EnsureCapacity(_vaddress.Count + 1);
             return CreateInstance();
         }
@@ -141,6 +143,8 @@ namespace DODLocator
         /// <param name="ids">Identifiers to instantiate</param>
         public void InstantiateRange(Span<int> ids)
         {
+            if (_needDispose)
+                throw new ObjectDisposedException(nameof(StructArray<T>));
             EnsureCapacity(_vaddress.Count + ids.Length);
             for (int i =  0; i < ids.Length; i++)
                 ids[i] = CreateInstance();
@@ -152,7 +156,6 @@ namespace DODLocator
         /// <param name="idx"></param>
         private void MoveFromEnd(int idx)
         {
-            int max = _size.Max();
             for (int i = 0; i < _fieldsCount; i++)
             {
                 byte *ptr = (byte *) *(_data + i);
@@ -170,6 +173,8 @@ namespace DODLocator
         /// <returns>true if the instance with the <paramref name="id"/> was contained in the array, otherwise false</returns>
         public bool Destroy(int id)
         {
+            if (_needDispose)
+                throw new ObjectDisposedException(nameof(StructArray<T>));
             if (!_vaddress.HasKey(id))
                 return false;
             int deleteTarget = _vaddress.GetDense(id);
@@ -186,6 +191,8 @@ namespace DODLocator
         /// <param name="ids">Indices</param>
         public void DestroyRange(Span<int> ids)
         {
+            if (_needDispose)
+                throw new ObjectDisposedException(nameof(StructArray<T>));
             for (int i = 0; i < ids.Length; i++)
             {
                 if (_vaddress.HasKey(ids[i]))
@@ -211,6 +218,8 @@ namespace DODLocator
         /// <param name="handler">Method for processing</param>
         public void ProcessRawData(RawDataHandler handler)
         {
+            if (_needDispose)
+                throw new ObjectDisposedException(nameof(StructArray<T>));
             for (int i = 0; i < _fieldsCount; i++)
             {
                 byte *ptr = (byte *) *(_data + i);
@@ -277,8 +286,10 @@ namespace DODLocator
         /// <returns>Identifier of index, if incorrect index, then returns -1</returns>
         public int GetIdOfIndex(int index)
         {
+            if (_needDispose)
+                throw new ObjectDisposedException(nameof(StructArray<T>));
             Debug.Assert(index >= 0 && index < _vaddress.Size);
-            if (index < 0 || index > _vaddress.Size)
+            if (index < 0 || index > _vaddress.Count)
                 return -1;
             return _vaddress.Dense[index];
         }
@@ -303,30 +314,7 @@ namespace DODLocator
                 }
             }
         }
-        /// <summary>
-        /// Check valid cast of <typeparamref name="T1"/> to <paramref name="type"/>
-        /// </summary>
-        /// <typeparam name="T1">Target type</typeparam>
-        /// <param name="type">Original type</param>
-        /// <exception cref="InvalidCastException">If cast invalid</exception>
-        [Conditional("DEBUG")]
-        private void CheckCast<T1>(Type type)
-        {
-            if (typeof(T1) != type)
-                throw new InvalidCastException($"Try cast {typeof(T1).FullName} => {type.FullName}");
-        }
 
-        /// <summary>
-        /// Check bounds of identifier
-        /// </summary>
-        /// <param name="id">Identifier</param>
-        /// <exception cref="InvalidOperationException">If identifier out of bounds</exception>
-        [Conditional("DEBUG")]
-        private void CheckIdentifier(int id)
-        {
-            if (id <= 0 || id >= _vaddress.Count)
-                throw new InvalidOperationException($"Is no identifier of struct {typeof(T).FullName}");
-        }
         /// <summary>
         /// Throw if out of memory after allocate memory
         /// </summary>
