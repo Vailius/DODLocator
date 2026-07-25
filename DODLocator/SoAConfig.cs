@@ -1,3 +1,4 @@
+using System;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using DODLocator.Curves;
@@ -28,33 +29,36 @@ namespace DODLocator
         /// </summary>
         public readonly int StartCapacity;
 
-        public SoAConfig([NotNullWhen(true)]IMemoryGrowCurve curve, 
-            [NotNullWhen(true)]IIdentifierGenerator idgen, 
-            [NotNullWhen(true)]IMemoryAllocator alloc, 
+        public SoAConfig(IMemoryGrowCurve curve, 
+            IIdentifierGenerator idgen, 
+            IMemoryAllocator alloc, 
             int startCapacity = 64)
         {
-            Debug.Assert(curve != null, $"Null reference of {nameof(curve)}");
-            Debug.Assert(idgen != null, $"Null reference of {nameof(idgen)}");
-            Debug.Assert(alloc != null, $"Null reference of {nameof(alloc)}");
             Debug.Assert(startCapacity > 0, $"{nameof(startCapacity)} <= 0");
+            if (curve is null)
+                throw new ArgumentNullException(nameof(curve));
+            if (idgen is null)
+                throw new ArgumentNullException(nameof(idgen));
+            if (alloc is null)
+                throw new ArgumentNullException(nameof(alloc));
             MemoryGrow = curve;
             IdGenerator = idgen;
             Allocator = alloc;
-            StartCapacity = startCapacity;
+            StartCapacity = startCapacity > 0 ? startCapacity : 64;
         }
 
-        public SoAConfig([NotNullWhen(true)]IIdentifierGenerator idgen, [NotNullWhen(true)]IMemoryAllocator alloc, int startCapacity = 64)
+        public SoAConfig(IIdentifierGenerator idgen, IMemoryAllocator alloc, int startCapacity = 64)
             : this(new MemoryGrowCurveX2(), idgen, alloc, startCapacity) {}
-        public SoAConfig([NotNullWhen(true)]IMemoryGrowCurve curve, [NotNullWhen(true)]IMemoryAllocator alloc, int startCapacity = 64)
+        public SoAConfig(IMemoryGrowCurve curve, IMemoryAllocator alloc, int startCapacity = 64)
             : this(curve, new IdentifierIterator(), alloc, startCapacity) {}
-        public SoAConfig([NotNullWhen(true)]IMemoryGrowCurve curve, [NotNullWhen(true)]IIdentifierGenerator idgen, int startCapacity = 64)
+        public SoAConfig(IMemoryGrowCurve curve, IIdentifierGenerator idgen, int startCapacity = 64)
             : this(curve, idgen, new DefaultAllocator(), startCapacity) {}
         
-        public SoAConfig([NotNullWhen(true)]IMemoryGrowCurve curve, int startCapacity = 64)
+        public SoAConfig(IMemoryGrowCurve curve, int startCapacity = 64)
             : this(curve, new IdentifierIterator(), startCapacity) {}
-        public SoAConfig([NotNullWhen(true)]IIdentifierGenerator idgen, int startCapacity = 64)
+        public SoAConfig(IIdentifierGenerator idgen, int startCapacity = 64)
             : this(idgen, new DefaultAllocator(), startCapacity) {}
-        public SoAConfig([NotNullWhen(true)]IMemoryAllocator alloc, int startCapacity = 64)
+        public SoAConfig(IMemoryAllocator alloc, int startCapacity = 64)
             : this(new IdentifierIterator(), alloc, startCapacity) {}
         
         public SoAConfig(int startCapacity = 64)
