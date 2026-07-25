@@ -50,38 +50,61 @@ namespace DODLocator
 #endregion // Fields
         
 #region  .ctor
-        public StructArray([NotNullWhen(true)]SoAConfig cfg)
+        public StructArray([NotNullWhen(true)] SoAConfig cfg)
         {
+            if (cfg is null) throw new ArgumentNullException(nameof(cfg));
             if (!StructFieldsAnalyzer<T>.IsValid)
                 throw new InvalidOperationException("Unexpected struct fields type");
+            
             _startCapacity = cfg.StartCapacity;
             _fieldsCount = StructFieldsAnalyzer<T>.Size.Count;
-            _data = (void **) cfg.Allocator.Alloc(
-                sizeof(void *) * _fieldsCount
-            );
-
-            if (_data == (void **)0)
-                throw new OutOfMemoryException();
-
-            _size = new int[_fieldsCount];
-            _type = new Type[_fieldsCount];
-            _vaddress = new SparseSet(_startCapacity);
-
-            var names = StructFieldsAnalyzer<T>.Size.Keys;
-
-            foreach (var name in names)
+            
+            void** tempData = null;
+            void** fieldBuffers = stackalloc void*[_fieldsCount];
+            int allocatedCount = 0;
+            
+            try
             {
-                int index = StructFieldsAnalyzer<T>.Identifier[name];
-                int size = StructFieldsAnalyzer<T>.Size[name];
-                Type fieldType = StructFieldsAnalyzer<T>.FieldType[name];
-
-                _size[index] = size;
-                _type[index] = fieldType;
-                void *ptr = cfg.Allocator.Alloc(size * _startCapacity);
-                ThrowIfOOM(ptr);
-                *(_data + index) = ptr;
+                tempData = (void**)cfg.Allocator.Alloc(sizeof(void*) * _fieldsCount);
+                if (tempData == null) throw new OutOfMemoryException();
+                
+                var names = StructFieldsAnalyzer<T>.Size.Keys;
+                foreach (var name in names)
+                {
+                    int index = StructFieldsAnalyzer<T>.Identifier[name];
+                    int size = StructFieldsAnalyzer<T>.Size[name];
+                    Type fieldType = StructFieldsAnalyzer<T>.FieldType[name];
+                    
+                    void* ptr = cfg.Allocator.Alloc(size * _startCapacity);
+                    if (ptr == null) throw new OutOfMemoryException();
+                    
+                    tempData[index] = ptr;
+                    allocatedCount++;
+                }
+                
+                _data = tempData;
+                _size = new int[_fieldsCount];
+                _type = new Type[_fieldsCount];
+                _vaddress = new SparseSet(_startCapacity);
+                _config = cfg;
+                
+                foreach (var name in names)
+                {
+                    int index = StructFieldsAnalyzer<T>.Identifier[name];
+                    _size[index] = StructFieldsAnalyzer<T>.Size[name];
+                    _type[index] = StructFieldsAnalyzer<T>.FieldType[name];
+                }
             }
-            _config = cfg;
+            catch
+            {
+                if (tempData != null)
+                {
+                    for (int i = 0; i < allocatedCount; i++)
+                        if (tempData[i] != null) cfg.Allocator.Free(tempData[i]);
+                    cfg.Allocator.Free(tempData);
+                }
+                throw;
+            }
         }
 
 #endregion // .ctor
