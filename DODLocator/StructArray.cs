@@ -221,6 +221,8 @@ namespace DODLocator
         {
             if (!_needDispose)
                 throw new ObjectDisposedException(nameof(StructArray<T>));
+            if (handler is null)
+                throw new ArgumentNullException(nameof(handler));
             for (int i = 0; i < _fieldsCount; i++)
             {
                 byte *ptr = (byte *) *(_data + i);
