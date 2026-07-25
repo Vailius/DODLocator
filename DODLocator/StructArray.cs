@@ -309,8 +309,8 @@ namespace DODLocator
         {
             if (!_needDispose)
                 throw new ObjectDisposedException(nameof(StructArray<T>));
-            Debug.Assert(index >= 0 && index < _vaddress.Size);
-            if (index < 0 || index > _vaddress.Count)
+            Debug.Assert(index >= 0 && index < _vaddress.Count);
+            if (index < 0 || index >= _vaddress.Count)
                 return -1;
             return _vaddress.Dense[index];
         }
