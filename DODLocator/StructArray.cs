@@ -263,8 +263,8 @@ namespace DODLocator
                     StructFieldsAnalyzer<T>.NameOfIdentifier[i]
                 ];
 
-                for (int j = 0; j < size; j++)
-                    data[i] = 0;
+                for (int j = dense_id * size; j < size; j++)
+                    data[j] = 0;
             }
         }
 
