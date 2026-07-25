@@ -199,7 +199,7 @@ namespace DODLocator
                 {
                     int idx = _vaddress.GetDense(ids[i]);
                     _vaddress.RemoveKey(ids[i]);
-                    _config.IdGenerator.Return(ids[i]);
+                    _config.IdGenerator.Return(ids[i]); 
                     if (idx != _vaddress.Count)
                         MoveFromEnd(idx);
                 }
@@ -263,7 +263,7 @@ namespace DODLocator
         {
             if (id < 0 || id >= _fieldsCount)
                 throw new ArgumentOutOfRangeException(nameof(id), $"Field identifier {id} is out of range [0, {_fieldsCount})");
-            if (!_vaddress.HasKey(id))
+            if (_vaddress.Count == 0)
                 throw new InvalidOperationException($"No active instance with identifier {id}");
         }
 
