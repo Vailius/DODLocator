@@ -252,7 +252,7 @@ namespace DODLocator
         /// <typeparam name="T1">Target type</typeparam>
         /// <param name="type">Original type</param>
         /// <exception cref="InvalidCastException">If cast invalid</exception>
-        [Conditional("Debug")]
+        [Conditional("DEBUG")]
         private void CheckCast<T1>(Type type)
         {
             if (typeof(T1) != type)
@@ -264,7 +264,7 @@ namespace DODLocator
         /// </summary>
         /// <param name="id">Identifier</param>
         /// <exception cref="InvalidOperationException">If identifier out of bounds</exception>
-        [Conditional("Debug")]
+        [Conditional("DEBUG")]
         private void CheckIdentifier(int id)
         {
             if (id <= 0 || id >= _vaddress.Count)
