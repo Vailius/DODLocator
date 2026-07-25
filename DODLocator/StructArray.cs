@@ -128,7 +128,7 @@ namespace DODLocator
         private int CreateInstance()
         {
             int id = _config.IdGenerator.Next();
-            _vaddress.AddKey(id);
+            _ = _vaddress.AddKey(id);
             return id;
         }
 
@@ -227,15 +227,49 @@ namespace DODLocator
         /// <param name="dataIdentifier">Identifier of field</param>
         public void ProcessData<T1>(DataHandler<T1> handler, int dataIdentifier) where T1 : unmanaged
         {
-            CheckIdentifier(dataIdentifier);
-            CheckCast<T1>(_type[dataIdentifier]);
-
-            T1 *ptr = (T1 *) *(_data + dataIdentifier);
-
+            if (_needDispose) throw new ObjectDisposedException(nameof(StructArray<T>));
+            if (handler is null) throw new ArgumentNullException(nameof(handler));
+            
+            ValidateDataIdentifier(dataIdentifier);
+            ValidateType<T1>(dataIdentifier);
+            
+            T1* ptr = (T1*)*(_data + dataIdentifier);
             handler(new Span<T1>(ptr, _vaddress.Count));
         }
 #endregion // DataProcessor
 #region Utils
+
+        /// <summary>
+        /// Validate data id
+        /// </summary>
+        /// <param name="id">field identifier</param>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// On argument out of range [0, <see cref="DODLocator.StructArray{T}._fieldsCount"/>]
+        /// </exception>
+        /// <exception cref="InvalidOperationException">
+        /// If sparse set (<see cref="DODLocator.StructArray{T}._vaddress"/> no has 
+        /// <paramref name="id"/>
+        /// </exception>
+        private void ValidateDataIdentifier(int id)
+        {
+            if (id < 0 || id >= _fieldsCount)
+                throw new ArgumentOutOfRangeException(nameof(id), $"Field identifier {id} is out of range [0, {_fieldsCount})");
+            if (!_vaddress.HasKey(id))
+                throw new InvalidOperationException($"No active instance with identifier {id}");
+        }
+
+        /// <summary>
+        /// Check type of data of dataIdentifier
+        /// </summary>
+        /// <typeparam name="T1"></typeparam>
+        /// <param name="dataIdentifier"></param>
+        /// <exception cref="InvalidCastException"></exception>
+        private void ValidateType<T1>(int dataIdentifier) where T1 : unmanaged
+        {
+            if (typeof(T1) != _type[dataIdentifier])
+                throw new InvalidCastException($"Cannot cast {typeof(T1).FullName} to {_type[dataIdentifier].FullName}");
+        }
+
         /// <summary>
         /// Get id from index of array
         /// </summary>
