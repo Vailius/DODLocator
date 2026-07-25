@@ -319,7 +319,7 @@ namespace DODLocator
         /// <param name="targetCapacity">Target capacity</param>
         private void EnsureCapacity(int targetCapacity)
         {
-            if (targetCapacity >= _vaddress.Size)
+            if (targetCapacity > _vaddress.Size)
             {
                 int newcap = _config.MemoryGrow.Grow(_vaddress.Size, targetCapacity);
 
