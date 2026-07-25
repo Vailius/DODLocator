@@ -348,7 +348,7 @@ namespace DODLocator
 
         public void Dispose()
         {
-            if (!_needDispose)
+            if (_needDispose)
             {
                 if (_data != (void **)0)
                 {
