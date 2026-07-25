@@ -116,7 +116,7 @@ namespace DODLocator
         /// <returns>Identifier of new instance</returns>
         public int Instantiate()
         {
-            if (_needDispose)
+            if (!_needDispose)
                 throw new ObjectDisposedException(nameof(StructArray<T>));
             EnsureCapacity(_vaddress.Count + 1);
             return CreateInstance();
@@ -131,6 +131,7 @@ namespace DODLocator
             int id = _config.IdGenerator.Next();
             bool isAdded = _vaddress.AddKey(id);
             Debug.Assert(isAdded);
+            ClearData(id);
             return id;
         }
 
@@ -143,7 +144,7 @@ namespace DODLocator
         /// <param name="ids">Identifiers to instantiate</param>
         public void InstantiateRange(Span<int> ids)
         {
-            if (_needDispose)
+            if (!_needDispose)
                 throw new ObjectDisposedException(nameof(StructArray<T>));
             EnsureCapacity(_vaddress.Count + ids.Length);
             for (int i =  0; i < ids.Length; i++)
@@ -173,7 +174,7 @@ namespace DODLocator
         /// <returns>true if the instance with the <paramref name="id"/> was contained in the array, otherwise false</returns>
         public bool Destroy(int id)
         {
-            if (_needDispose)
+            if (!_needDispose)
                 throw new ObjectDisposedException(nameof(StructArray<T>));
             if (!_vaddress.HasKey(id))
                 return false;
@@ -191,7 +192,7 @@ namespace DODLocator
         /// <param name="ids">Indices</param>
         public void DestroyRange(Span<int> ids)
         {
-            if (_needDispose)
+            if (!_needDispose)
                 throw new ObjectDisposedException(nameof(StructArray<T>));
             for (int i = 0; i < ids.Length; i++)
             {
@@ -218,7 +219,7 @@ namespace DODLocator
         /// <param name="handler">Method for processing</param>
         public void ProcessRawData(RawDataHandler handler)
         {
-            if (_needDispose)
+            if (!_needDispose)
                 throw new ObjectDisposedException(nameof(StructArray<T>));
             for (int i = 0; i < _fieldsCount; i++)
             {
@@ -236,7 +237,7 @@ namespace DODLocator
         /// <param name="dataIdentifier">Identifier of field</param>
         public void ProcessData<T1>(DataHandler<T1> handler, int dataIdentifier) where T1 : unmanaged
         {
-            if (_needDispose) throw new ObjectDisposedException(nameof(StructArray<T>));
+            if (!_needDispose) throw new ObjectDisposedException(nameof(StructArray<T>));
             if (handler is null) throw new ArgumentNullException(nameof(handler));
             
             ValidateDataIdentifier(dataIdentifier);
@@ -247,6 +248,25 @@ namespace DODLocator
         }
 #endregion // DataProcessor
 #region Utils
+
+        /// <summary>
+        /// Clear fields of instance
+        /// </summary>
+        /// <param name="id"> Instance identifier </param>
+        private void ClearData(int id)
+        {
+            int dense_id = _vaddress.GetDense(id);
+            for (int i = 0; i < _fieldsCount; i++)
+            {
+                byte *data = (byte *) *(_data + i);
+                int size = StructFieldsAnalyzer<T>.Size[
+                    StructFieldsAnalyzer<T>.NameOfIdentifier[i]
+                ];
+
+                for (int j = 0; j < size; j++)
+                    data[i] = 0;
+            }
+        }
 
         /// <summary>
         /// Validate data id
@@ -286,7 +306,7 @@ namespace DODLocator
         /// <returns>Identifier of index, if incorrect index, then returns -1</returns>
         public int GetIdOfIndex(int index)
         {
-            if (_needDispose)
+            if (!_needDispose)
                 throw new ObjectDisposedException(nameof(StructArray<T>));
             Debug.Assert(index >= 0 && index < _vaddress.Size);
             if (index < 0 || index > _vaddress.Count)
@@ -329,7 +349,7 @@ namespace DODLocator
 
         public void Dispose()
         {
-            if (_needDispose)
+            if (!_needDispose)
             {
                 if (_data != (void **)0)
                 {
