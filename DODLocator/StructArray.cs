@@ -59,7 +59,6 @@ namespace DODLocator
             _fieldsCount = StructFieldsAnalyzer<T>.Size.Count;
             
             void** tempData = null;
-            void** fieldBuffers = stackalloc void*[_fieldsCount];
             int allocatedCount = 0;
             
             try
