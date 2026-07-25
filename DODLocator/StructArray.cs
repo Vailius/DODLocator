@@ -139,9 +139,10 @@ namespace DODLocator
         /// Create a new instances of <typeparamref name="T"/>
         /// </summary>
         /// <remarks>
-        /// If there are duplicate indices in <paramref name="ids"/>, they will be ignored.
+        /// <paramref name="ids"/> is a buffer, all values in it will be
+        /// overwritten with new identifiers of instantiated structs
         /// </remarks>
-        /// <param name="ids">Identifiers to instantiate</param>
+        /// <param name="ids">Output identifiers buffer</param>
         public void InstantiateRange(Span<int> ids)
         {
             if (!_needDispose)
