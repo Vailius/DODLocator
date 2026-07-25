@@ -322,8 +322,6 @@ namespace DODLocator
             if (targetCapacity >= _vaddress.Size)
             {
                 int newcap = _config.MemoryGrow.Grow(_vaddress.Size, targetCapacity);
-                _vaddress.Resize(newcap);
-
 
                 for (int i = 0; i < _fieldsCount; i++)
                 {
@@ -332,6 +330,7 @@ namespace DODLocator
                     ThrowIfOOM(newMem);
                     *(_data + i) = newMem;
                 }
+                _vaddress.Resize(newcap);
             }
         }
 
