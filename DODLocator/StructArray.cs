@@ -365,6 +365,7 @@ namespace DODLocator
                     _data = (void **)0;
                 }
                 _needDispose = false;
+                GC.SuppressFinalize(this);
             }
         }
 
