@@ -262,7 +262,7 @@ namespace DODLocator
             {
                 byte *data = (byte *) *(_data + i);
                 int size = StructFieldsAnalyzer<T>.Size[
-                    StructFieldsAnalyzer<T>.NameOfIdentifier[i]
+                    StructFieldsAnalyzer<T>.NameOfIdentifier[i + 1]
                 ];
                 int offset = size * dense_id;
 
